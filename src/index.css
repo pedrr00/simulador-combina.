@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0B1120] text-white antialiased;
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Isto remove o aspeto branco padrão dos inputs e selects */
+  select,
+  input {
+    @apply bg-[#1a2236] border-slate-700 text-white focus:ring-cyan-500 focus:border-cyan-500;
+  }
+}
