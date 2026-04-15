@@ -106,7 +106,10 @@ export default function App() {
   }, [formData]);
 
   const results = useMemo(() => {
-    const cashbackSupermarket = formData.supermarketSpend * 0.1;
+    const hasNOSForCashback = formData.telecomOperators.includes('NOS');
+    const hasGalpElecForCashback = formData.electricityOperator === 'Galp Energia';
+    const hasGalpGasForCashback = formData.gasOperator === 'Galp Energia';
+    const serviceCountForCashback = (hasNOSForCashback ? 1 : 0) + (hasGalpElecForCashback ? 1 : 0) + (hasGalpGasForCashback ? 1 : 0);
 
     // Telecom logic (NOS Proposal)
     let newTelecomValue = 45.49;
