@@ -106,9 +106,23 @@ export default function App() {
   }, [formData]);
 
   const results = useMemo(() => {
-    const cashbackSupermarket = formData.supermarketSpend * 0.1;
+    // 1. Calculamos primeiro o Nível com base nos serviços de utilidades
+    const hasNOS = formData.telecomOperators.includes('NOS');
+    const hasElecGalp = formData.electricityOperator === 'Galp Energia';
+    const hasGasGalp = formData.gasOperator === 'Galp Energia';
+
+    const combinaLevel = (hasNOS ? 1 : 0) + (hasElecGalp ? 1 : 0) + (hasGasGalp ? 1 : 0);
+
+    // 2. Definimos a percentagem baseada no nível
+    let supermarketPercent = 0;
+    if (combinaLevel === 1) supermarketPercent = 0.02;      // 2%
+    else if (combinaLevel === 2) supermarketPercent = 0.05; // 5%
+    else if (combinaLevel === 3) supermarketPercent = 0.10; // 10%
+
+    // 3. Calculamos o valor do Cashback (Gasto * Percentagem)
+    const cashbackSupermarket = (formData.supermarketSpend || 0) * supermarketPercent;
  
-    // Telecom logic (NOS Proposal)
+    // 4. Telecom logic (NOS Proposal)
     let newTelecomValue = 45.49;
     if (formData.mobilePhones === 1) newTelecomValue = 59.99;
     else if (formData.mobilePhones === 2) newTelecomValue = 67.99;
@@ -116,19 +130,10 @@ export default function App() {
     else if (formData.mobilePhones > 3)
       newTelecomValue = 70.99 + 5 * (formData.mobilePhones - 3);
 
-    const telecomSavings = formData.telecomCost - newTelecomValue;
-    const discountEnergy = 10; // Fixed discount for switching
+    const telecomSavings = (formData.telecomCost || 0) - newTelecomValue;
+    const discountEnergy = 10; 
 
-    // Combina Fuel Logic
-    const hasContinente = formData.supermarkets.includes('Continente');
-    const hasNOS = formData.telecomOperators.includes('NOS');
-    const hasGalp =
-      formData.electricityOperator === 'Galp Energia' ||
-      formData.gasOperator === 'Galp Energia';
-
-    const combinaLevel =
-      (hasContinente ? 1 : 0) + (hasNOS ? 1 : 0) + (hasGalp ? 1 : 0);
-
+    // 5. Combustível
     let fuelDiscountPerLiter = 0;
     if (combinaLevel === 1) fuelDiscountPerLiter = 0.2;
     else if (combinaLevel === 2) fuelDiscountPerLiter = 0.25;
@@ -136,7 +141,7 @@ export default function App() {
 
     const estimatedLiters =
       formData.fuelPricePerLiter > 0
-        ? formData.fuelMonthlySpend / formData.fuelPricePerLiter
+        ? (formData.fuelMonthlySpend || 0) / formData.fuelPricePerLiter
         : 0;
     const fuelSavings = estimatedLiters * fuelDiscountPerLiter;
 
@@ -145,16 +150,19 @@ export default function App() {
     const annualLoss = monthlySavings * 12;
     const annualCardAccumulated = cashbackSupermarket * 12;
 
+    // --- CRUCIAL: O return tem de incluir a nova variável supermarketPercent ---
     return {
       monthlySavings,
       annualLoss,
       annualCardAccumulated,
       cashbackSupermarket,
+      supermarketPercent, // <--- ADICIONE ESTA LINHA AQUI
       telecomSavings,
       newTelecomValue,
       discountEnergy,
       fuelSavings,
       fuelDiscountPerLiter,
+      combinaLevel
     };
   }, [formData]);
 
@@ -657,7 +665,7 @@ export default function App() {
                         <div className="flex items-center gap-3">
                           <div className="w-2 h-2 rounded-full bg-cyan-accent" />
                           <span className="text-text-secondary">
-                            Cashback Supermercado (10%)
+                            Cashback Supermercado ({(results.supermarketPercent * 100).toFixed(0)}%)
                           </span>
                         </div>
                         <span className="font-bold">
