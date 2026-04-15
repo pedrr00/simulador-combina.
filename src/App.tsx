@@ -111,6 +111,11 @@ export default function App() {
     const hasGalpGasForCashback = formData.gasOperator === 'Galp Energia';
     const serviceCountForCashback = (hasNOSForCashback ? 1 : 0) + (hasGalpElecForCashback ? 1 : 0) + (hasGalpGasForCashback ? 1 : 0);
 
+    let supermarketPercent = 0;
+    if (serviceCountForCashback === 1) supermarketPercent = 0.02;
+    else if (serviceCountForCashback === 2) supermarketPercent = 0.05;
+    else if (serviceCountForCashback === 3) supermarketPercent = 0.10;
+    
     // Telecom logic (NOS Proposal)
     let newTelecomValue = 45.49;
     if (formData.mobilePhones === 1) newTelecomValue = 59.99;
