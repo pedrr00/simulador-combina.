@@ -56,7 +56,7 @@ const INITIAL_FORM_DATA: FormData = {
   supermarketSpend: 0,
   supermarketReason: '',
   fuelMonthlySpend: 0,
-  fuelPricePerLiter: 1.7,
+  fuelPricePerLiter: 2.14,
 };
 
 const OPERATORS = [
@@ -295,30 +295,32 @@ export default function App() {
               Operadora Telecomunicações
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {TELECOM_OPERATORS.map((op) => (
-                <button
-                  key={op}
-                  onClick={() => toggleSelection('telecomOperators', op)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all border ${
-                    formData.telecomOperators.includes(op)
-                      ? 'bg-cyan-accent/20 border-cyan-accent text-cyan-accent'
-                      : 'bg-white/5 border-glass-border text-text-secondary hover:border-white/20'
-                  }`}
-                >
-                  <div
-                    className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
-                      formData.telecomOperators.includes(op)
-                        ? 'bg-cyan-accent border-cyan-accent'
-                        : 'border-glass-border'
-                    }`}
-                  >
-                    {formData.telecomOperators.includes(op) && (
-                      <CheckCircle2 size={10} className="text-black" />
-                    )}
-                  </div>
-                  {op}
-                </button>
-              ))}
+            {TELECOM_OPERATORS.map((op) => (
+            <button
+              key={op}
+              type="button"
+              onClick={() => {
+                // Substitui o array anterior por um novo contendo apenas a operadora clicada
+                const newValue = formData.telecomOperators.includes(op) ? [] : [op];
+                handleInputChange('telecomOperators', newValue);
+              }}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all border ${
+                formData.telecomOperators.includes(op)
+                  ? 'bg-cyan-accent/20 border-cyan-accent text-cyan-accent shadow-[0_0_10px_rgba(34,211,238,0.2)]'
+                  : 'bg-white/5 border-glass-border text-text-secondary hover:border-white/20'
+              }`}
+            >
+              {/* Círculo de seleção (estilo Radio) */}
+              <div className={`w-3 h-3 rounded-full border flex items-center justify-center ${
+                formData.telecomOperators.includes(op) ? 'border-cyan-accent' : 'border-slate-500'
+              }`}>
+                {formData.telecomOperators.includes(op) && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-accent" />
+                )}
+              </div>
+              {op}
+            </button>
+          ))}
             </div>
             <div className="flex flex-col gap-2 mt-2">
               <label className="text-[10px] text-text-secondary uppercase font-bold">
@@ -368,30 +370,32 @@ export default function App() {
               Preferência de Supermercado
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {SUPERMARKETS.map((market) => (
-                <button
-                  key={market}
-                  onClick={() => toggleSelection('supermarkets', market)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all border ${
-                    formData.supermarkets.includes(market)
-                      ? 'bg-cyan-accent/20 border-cyan-accent text-cyan-accent'
-                      : 'bg-white/5 border-glass-border text-text-secondary hover:border-white/20'
-                  }`}
-                >
-                  <div
-                    className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
-                      formData.supermarkets.includes(market)
-                        ? 'bg-cyan-accent border-cyan-accent'
-                        : 'border-glass-border'
-                    }`}
-                  >
-                    {formData.supermarkets.includes(market) && (
-                      <CheckCircle2 size={10} className="text-black" />
-                    )}
-                  </div>
-                  {market}
-                </button>
-              ))}
+            {SUPERMARKETS.map((market) => (
+            <button
+              key={market}
+              type="button"
+              onClick={() => {
+                // Altera para seleção única: se já estiver selecionado, limpa; se não, define como o único.
+                const newValue = formData.supermarkets.includes(market) ? [] : [market];
+                handleInputChange('supermarkets', newValue);
+              }}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all border ${
+                formData.supermarkets.includes(market)
+                  ? 'bg-cyan-accent/20 border-cyan-accent text-cyan-accent shadow-[0_0_10px_rgba(34,211,238,0.2)]'
+                  : 'bg-white/5 border-glass-border text-text-secondary hover:border-white/20'
+              }`}
+            >
+              {/* Visual de Radio (Círculo) em vez de Checkbox */}
+              <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                formData.supermarkets.includes(market) ? 'border-cyan-accent' : 'border-glass-border'
+              }`}>
+                {formData.supermarkets.includes(market) && (
+                  <div className="w-2 h-2 rounded-full bg-cyan-accent" />
+                )}
+              </div>
+              {market}
+            </button>
+            ))}
             </div>
             <div className="relative mt-2">
               <label className="text-[10px] text-text-secondary uppercase font-bold mb-1 block">
@@ -446,7 +450,7 @@ export default function App() {
                   <input
                     type="number"
                     step="0.001"
-                    placeholder="1.70"
+                    placeholder="Atualizado a 15/04"
                     value={formData.fuelPricePerLiter || ''}
                     onChange={(e) =>
                       handleInputChange(
@@ -509,34 +513,7 @@ export default function App() {
                 exit={{ opacity: 0, y: -20 }}
                 className="flex flex-col gap-8"
               >
-                {/* Section 1: The Alert */}
-                {!isFullEcosystem && (
-                  <section className="bg-orange-500/5 border border-orange-500/20 rounded-[24px] p-8 shadow-xl relative overflow-hidden group">
-                    <div className="absolute -right-8 -top-8 text-orange-500/10 group-hover:scale-110 transition-transform duration-700">
-                      <TrendingUp size={160} />
-                    </div>
-                    <div className="relative z-10">
-                      <h3 className="text-orange-400 text-sm font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                        <Info size={16} />O que está a deixar de ganhar hoje
-                      </h3>
-                      <div className="flex items-baseline gap-4">
-                        <span className="text-6xl font-black text-orange-400 tracking-tighter">
-                          {results.annualLoss.toLocaleString('pt-PT', {
-                            minimumFractionDigits: 2,
-                          })}
-                          €
-                        </span>
-                        <span className="text-orange-400/60 font-medium">
-                          / ANO
-                        </span>
-                      </div>
-                      <p className="text-orange-400/70 text-sm mt-4 max-w-lg leading-relaxed">
-                        Este é o valor que está a "perder" anualmente por não
-                        centralizar os seus serviços no Ecossistema Combina.
-                      </p>
-                    </div>
-                  </section>
-                )}
+                
 
                 {/* Section 2: The Solution */}
                 <section className="bg-card-bg backdrop-blur-xl border border-glass-border rounded-[32px] p-8 shadow-2xl">
@@ -718,6 +695,35 @@ export default function App() {
                     </div>
                   </div>
                 </section>
+                
+                {/* Section 1: The Alert */}
+                {!isFullEcosystem && (
+                  <section className="bg-orange-500/5 border border-orange-500/20 rounded-[24px] p-8 shadow-xl relative overflow-hidden group">
+                    <div className="absolute -right-8 -top-8 text-orange-500/10 group-hover:scale-110 transition-transform duration-700">
+                      <TrendingUp size={160} />
+                    </div>
+                    <div className="relative z-10">
+                      <h3 className="text-orange-400 text-sm font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                        <Info size={16} />O que está a deixar de ganhar hoje
+                      </h3>
+                      <div className="flex items-baseline gap-4">
+                        <span className="text-6xl font-black text-orange-400 tracking-tighter">
+                          {results.annualLoss.toLocaleString('pt-PT', {
+                            minimumFractionDigits: 2,
+                          })}
+                          €
+                        </span>
+                        <span className="text-orange-400/60 font-medium">
+                          / ANO
+                        </span>
+                      </div>
+                      <p className="text-orange-400/70 text-sm mt-4 max-w-lg leading-relaxed">
+                        Este é o valor que está a "perder" anualmente por não
+                        centralizar os seus serviços no Ecossistema Combina.
+                      </p>
+                    </div>
+                  </section>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
