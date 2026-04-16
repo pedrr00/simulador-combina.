@@ -146,9 +146,9 @@ export default function App() {
     const fuelSavings = estimatedLiters * fuelDiscountPerLiter;
 
     const monthlySavings =
-      cashbackSupermarket + telecomSavings + discountEnergy + fuelSavings;
+      cashbackSupermarket + telecomSavings + fuelSavings;
     const annualLoss = monthlySavings * 12;
-    const annualCardAccumulated = cashbackSupermarket * 12;
+    const annualCardAccumulated = (fuelSavings + cashbackSupermarket) * 12;
 
     // --- CRUCIAL: O return tem de incluir a nova variável supermarketPercent ---
     return {
@@ -560,6 +560,7 @@ export default function App() {
                   {/* Breakdown List */}
                   <div className="space-y-6 pt-6 border-t border-glass-border">
                     {/* New Telecom Proposal Card */}
+                  
                     <div className="bg-slate-800/80 border border-cyan-accent/30 rounded-2xl p-6 shadow-inner relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-2 opacity-10">
                         <Smartphone size={80} />
@@ -625,6 +626,7 @@ export default function App() {
                         </div>
                       </div>
                     </div>
+                    
 
                     <div className="space-y-1">
                       <p className="text-red-500 text-sm italic">
